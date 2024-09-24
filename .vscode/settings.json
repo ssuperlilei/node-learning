@@ -1,0 +1,94 @@
+//指定 IDE 配置，这些配置只会在本项目中生效
+{
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  // 指定 stylelint 生效的文件类型(尤其是 vue 文件)。
+  "stylelint.validate": ["css", "less", "postcss", "vue", "scss"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  // 启用自动代码修复功能，保存时触发 eslint 和 stylelint 的自动修复。
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  // 启用 eslint 的格式化能力
+  "eslint.format.enable": true,
+  // eslint 会在检查出错误时，给出对应的文档链接地址
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+  // 指定 eslint 生效的文件类型(尤其是 vue 文件)。
+  "eslint.probe": ["javascript", "typescript", "vue"],
+  // 指定 eslint 的工作区，使每个子模块下的 .eslintignore 文件都能对当前目录生效。
+  "eslint.workingDirectories": [{ "mode": "auto" }],
+  // volar 可以处理 vue 文件的格式化
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  // 自动代码修复功能，保存时触发 eslint 和 stylelint 的自动修复（默认关闭）。
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "never"
+  },
+  // json、yaml 等配置文件保存时自动格式化
+  "[json]": {
+    "editor.formatOnSave": false
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": false
+  },
+  "[yaml]": {
+    "editor.formatOnSave": false
+  },
+  // 行尾默认为 LF 换行符而非 CRLF
+  "files.eol": "\n",
+  // 键入 Tab 时插入空格而非 \t
+  "editor.insertSpaces": true,
+  // 缩进大小：2
+  "editor.tabSize": 2,
+  // 自动补充闭合的 HTML 标签
+  "html.autoClosingTags": true,
+  "nuxt.isNuxtApp": false,
+  "cSpell.words": [
+    "actived",
+    "antv",
+    "bsms",
+    "Btns",
+    "Cascader",
+    "datapoint",
+    "DATEFORMAT",
+    "DBCLICK",
+    "echarts",
+    "encryptor",
+    "Innner",
+    "jsencrypt",
+    "lims",
+    "luckysheet",
+    "messager",
+    "Pinia",
+    "Popconfirm",
+    "unref"
+  ],
+  "[svg]": {
+    "editor.defaultFormatter": "jock.svg"
+  },
+  "cSpell.userWords": [
+    "bmos"
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "i18n-ally.localesPaths": "packages/i18n/src/locales",
+  "i18n-ally.sourceLanguage": "zh_CN",
+  "i18n-ally.displayLanguage": "zh_CN",
+  "i18n-ally.enabledFrameworks": [
+    "vue",
+    "i18next",
+  ],
+  "i18n-ally.enabledParsers": [
+    "ts"
+  ],
+  "i18n-ally.extract.autoDetect": true,
+  "i18n-ally.frameworks.ruby-rails.scopeRoot": "",
+  "i18n-ally.keepFulfilled": false,
+  "i18n-ally.keystyle": "auto",
+}
