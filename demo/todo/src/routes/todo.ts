@@ -1,96 +1,96 @@
+/**
+ * Todo 路由：演示局部中间件（参数校验）、统一响应封装
+ */
 import { Router, Request, Response } from 'express';
 import { Todo, CreateTodoDto, UpdateTodoDto } from '../types/todo';
+import {
+  handleValidation,
+  validateCreateTodo,
+  validateUpdateTodo,
+  validateIdParam,
+} from '../middleware';
 
 const router = Router();
 
-// 内存存储
 const todos: Todo[] = [];
 let nextId = 1;
 
-// GET /todos — 获取所有 Todo
+// GET /todos — 获取所有
 router.get('/', (_req: Request, res: Response) => {
-  res.json({
-    code: 0,
-    message: '获取成功',
-    data: todos,
-  });
+  res.success(todos, '获取成功');
 });
 
-// GET /todos/:id — 获取单个 Todo
-router.get('/:id', (req: Request, res: Response) => {
+// GET /todos/:id — 获取单个（局部中间件：校验 id 为正整数）
+router.get('/:id', validateIdParam, handleValidation, (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const todo = todos.find((t) => t.id === id);
-
   if (!todo) {
-    res.status(404).json({ code: 404, message: `Todo #${id} 不存在` });
+    res.error(`Todo #${id} 不存在`, 404);
     return;
   }
-
-  res.json({ code: 0, message: '获取成功', data: todo });
+  res.success(todo, '获取成功');
 });
 
-// POST /todos — 创建 Todo
-router.post('/', (req: Request, res: Response) => {
-  const { title } = req.body as CreateTodoDto;
-
-  if (!title || title.trim() === '') {
-    res.status(400).json({ code: 400, message: 'title 不能为空' });
-    return;
+// POST /todos — 创建（局部中间件：校验 body.title）
+router.post(
+  '/',
+  validateCreateTodo,
+  handleValidation,
+  (req: Request, res: Response) => {
+    const { title } = req.body as CreateTodoDto;
+    const now = new Date();
+    const todo: Todo = {
+      id: nextId++,
+      title: title.trim(),
+      completed: false,
+      createdAt: now,
+      updatedAt: now,
+    };
+    todos.push(todo);
+    res.status(201).success(todo, '创建成功');
   }
+);
 
-  const now = new Date();
-  const todo: Todo = {
-    id: nextId++,
-    title: title.trim(),
-    completed: false,
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  todos.push(todo);
-  res.status(201).json({ code: 0, message: '创建成功', data: todo });
-});
-
-// PUT /todos/:id — 更新 Todo
-router.put('/:id', (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const index = todos.findIndex((t) => t.id === id);
-
-  if (index === -1) {
-    res.status(404).json({ code: 404, message: `Todo #${id} 不存在` });
-    return;
+// PUT /todos/:id — 更新
+router.put(
+  '/:id',
+  validateIdParam,
+  validateUpdateTodo,
+  handleValidation,
+  (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const index = todos.findIndex((t) => t.id === id);
+    if (index === -1) {
+      res.error(`Todo #${id} 不存在`, 404);
+      return;
+    }
+    const { title, completed } = req.body as UpdateTodoDto;
+    const updated: Todo = {
+      ...todos[index],
+      ...(title !== undefined && { title: title.trim() }),
+      ...(completed !== undefined && { completed }),
+      updatedAt: new Date(),
+    };
+    todos[index] = updated;
+    res.success(updated, '更新成功');
   }
+);
 
-  const { title, completed } = req.body as UpdateTodoDto;
-
-  if (title !== undefined && title.trim() === '') {
-    res.status(400).json({ code: 400, message: 'title 不能为空字符串' });
-    return;
+// DELETE /todos/:id — 删除
+router.delete(
+  '/:id',
+  validateIdParam,
+  handleValidation,
+  (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const index = todos.findIndex((t) => t.id === id);
+    if (index === -1) {
+      res.error(`Todo #${id} 不存在`, 404);
+      return;
+    }
+    const [deleted] = todos.splice(index, 1);
+    res.success(deleted, '删除成功');
   }
-
-  const updated: Todo = {
-    ...todos[index],
-    ...(title !== undefined && { title: title.trim() }),
-    ...(completed !== undefined && { completed }),
-    updatedAt: new Date(),
-  };
-
-  todos[index] = updated;
-  res.json({ code: 0, message: '更新成功', data: updated });
-});
-
-// DELETE /todos/:id — 删除 Todo
-router.delete('/:id', (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const index = todos.findIndex((t) => t.id === id);
-
-  if (index === -1) {
-    res.status(404).json({ code: 404, message: `Todo #${id} 不存在` });
-    return;
-  }
-
-  const [deleted] = todos.splice(index, 1);
-  res.json({ code: 0, message: '删除成功', data: deleted });
-});
+);
 
 export default router;
