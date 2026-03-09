@@ -1,0 +1,242 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Todo API",
+    "description": "基于 Express + TypeScript 的 Todo CRUD 接口，内存存储",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "本地开发"
+    }
+  ],
+  "paths": {
+    "/todos": {
+      "get": {
+        "summary": "获取所有 Todo",
+        "operationId": "listTodos",
+        "tags": ["Todo"],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListTodosResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "创建 Todo",
+        "operationId": "createTodo",
+        "tags": ["Todo"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTodoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "创建成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTodo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "title 不能为空",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/todos/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "integer", "example": 1 }
+        }
+      ],
+      "get": {
+        "summary": "获取单个 Todo",
+        "operationId": "getTodoById",
+        "tags": ["Todo"],
+        "responses": {
+          "200": {
+            "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTodo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Todo 不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "更新 Todo",
+        "operationId": "updateTodo",
+        "tags": ["Todo"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTodoDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "更新成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTodo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "title 不能为空字符串",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Todo 不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "删除 Todo",
+        "operationId": "deleteTodo",
+        "tags": ["Todo"],
+        "responses": {
+          "200": {
+            "description": "删除成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTodo"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Todo 不存在",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Todo": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "title": { "type": "string", "example": "学习 Express" },
+          "completed": { "type": "boolean", "example": false },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateTodoDto": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "example": "学习 Express" }
+        }
+      },
+      "UpdateTodoDto": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string", "example": "学习 Express（已完成）" },
+          "completed": { "type": "boolean", "example": true }
+        }
+      },
+      "ApiResponseTodo": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "example": 0 },
+          "message": { "type": "string", "example": "获取成功" },
+          "data": { "$ref": "#/components/schemas/Todo" }
+        }
+      },
+      "ListTodosResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "example": 0 },
+          "message": { "type": "string", "example": "获取成功" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Todo" }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "integer", "example": 404 },
+          "message": { "type": "string", "example": "Todo #1 不存在" }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Todo",
+      "description": "Todo 增删改查"
+    }
+  ]
+}
