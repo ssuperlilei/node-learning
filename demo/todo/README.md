@@ -15,6 +15,12 @@
 | **接口参数校验** | express-validator：body、param 校验 | `src/middleware/validate.ts` |
 | **静态资源托管** | `express.static('public')` 提供静态文件 | `src/index.ts`、`public/` |
 | **MySQL 持久化** | 连接池、仓库层、启动建表、健康检查、优雅关闭 | `src/db/`、`src/config/`、`src/repositories/` |
+| **数据库建模** | users / todos 表、主键、外键、索引设计 | `src/db/schema.sql` |
+| **CRUD SQL** | SELECT / INSERT / UPDATE / DELETE 示例 | `src/repositories/todoRepository.ts`、`src/routes/todo.ts` |
+| **联表查询** | INNER JOIN / LEFT JOIN users | `src/repositories/todoRepository.ts` (`findAllWithUser` 等) |
+| **分组/聚合** | GROUP BY completed，统计完成/未完成数量 | `src/repositories/todoRepository.ts` (`countByCompleted`) |
+| **排序/分页** | ORDER BY + LIMIT + OFFSET 分页 | `src/repositories/todoRepository.ts` (`findPaged`)、`src/routes/todo.ts` (`GET /todos/page`) |
+| **事务基础（ACID）** | 显式事务、commit/rollback、行级锁 (FOR UPDATE) | `src/repositories/todoRepository.ts` (`toggleCompletedInTransaction`) |
 
 ## 运行
 
