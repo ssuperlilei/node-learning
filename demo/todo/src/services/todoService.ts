@@ -1,7 +1,9 @@
 /**
  * Todo 服务层：业务逻辑，调用 repository，可在此做权限、多步操作等
+ * 分页查询使用 Redis 缓存（读穿透 + 写失效）以减轻数据库压力
  */
 import * as todoRepo from '../repositories/todoRepository';
+import * as redis from '../db/redis';
 import type { Todo, TodoWithUser, CreateTodoDto, UpdateTodoDto } from '../types/todo';
 import type { PagedResult, ListQuery, CompletedStats } from '../repositories/todoRepository';
 
@@ -14,15 +16,21 @@ export async function findById(id: number): Promise<Todo | null> {
 }
 
 export async function create(dto: CreateTodoDto, userId?: number): Promise<Todo> {
-  return todoRepo.create({ ...dto, userId: userId ?? dto.userId });
+  const created = await todoRepo.create({ ...dto, userId: userId ?? dto.userId });
+  await redis.incrPagedGen();
+  return created;
 }
 
 export async function update(id: number, dto: UpdateTodoDto): Promise<Todo | null> {
-  return todoRepo.update(id, dto);
+  const updated = await todoRepo.update(id, dto);
+  if (updated) await redis.incrPagedGen();
+  return updated;
 }
 
 export async function remove(id: number): Promise<Todo | null> {
-  return todoRepo.remove(id);
+  const removed = await todoRepo.remove(id);
+  if (removed) await redis.incrPagedGen();
+  return removed;
 }
 
 export async function findAllWithUser(): Promise<TodoWithUser[]> {
@@ -30,7 +38,16 @@ export async function findAllWithUser(): Promise<TodoWithUser[]> {
 }
 
 export async function findPaged(query: ListQuery): Promise<PagedResult<Todo>> {
-  return todoRepo.findPaged(query);
+  const page = Math.max(1, query.page ?? 1);
+  const pageSize = Math.min(100, Math.max(1, query.pageSize ?? 10));
+  const completed = query.completed;
+
+  const cached = await redis.getPagedCache<PagedResult<Todo>>(page, pageSize, completed);
+  if (cached) return cached;
+
+  const result = await todoRepo.findPaged({ page, pageSize, completed });
+  await redis.setPagedCache(page, pageSize, completed, result);
+  return result;
 }
 
 export async function countByCompleted(): Promise<CompletedStats[]> {
@@ -38,5 +55,6 @@ export async function countByCompleted(): Promise<CompletedStats[]> {
 }
 
 export async function toggleCompletedInTransaction(ids: number[]): Promise<void> {
-  return todoRepo.toggleCompletedInTransaction(ids);
+  await todoRepo.toggleCompletedInTransaction(ids);
+  if (ids.length > 0) await redis.incrPagedGen();
 }

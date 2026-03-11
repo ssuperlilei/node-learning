@@ -41,6 +41,11 @@ export const logLevel = envStr('LOG_LEVEL', isProd ? 'info' : 'debug');
 /** 是否启用 Swagger UI（生产可关闭） */
 export const swaggerEnabled = envStr('SWAGGER_ENABLED', isProd ? 'false' : 'true') === 'true';
 
+/** Redis URL，空则禁用缓存 */
+export const redisUrl = envStr('REDIS_URL', '');
+/** 分页结果缓存 TTL（秒） */
+export const cachePagedTtl = envInt('CACHE_PAGED_TTL', 60);
+
 /** 数据库配置（复用原有） */
 export { getDatabaseConfig };
 

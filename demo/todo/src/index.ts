@@ -14,6 +14,7 @@ import {
 import { initDatabase } from './db/init';
 import { ping } from './db';
 import { disconnectPrisma } from './db/prismaClient';
+import { getRedis, disconnectRedis } from './db/redis';
 import { port, swaggerEnabled } from './config';
 import logger from './utils/logger';
 import swaggerUi from 'swagger-ui-express';
@@ -82,6 +83,12 @@ async function start() {
     process.exit(1);
   }
 
+  if (getRedis()) {
+    logger.info('分页接口已启用 Redis 缓存');
+  } else {
+    logger.info('未配置 REDIS_URL，分页接口将直接查库');
+  }
+
   const server = app.listen(port, () => {
     logger.info({ port, swagger: swaggerEnabled }, '服务已启动');
     logger.info(`API: http://localhost:${port}`);
@@ -93,6 +100,7 @@ async function start() {
     logger.info({ signal }, '收到退出信号，正在关闭...');
     server.close(async () => {
       await disconnectPrisma();
+      await disconnectRedis();
       logger.info('已关闭');
       process.exit(0);
     });
