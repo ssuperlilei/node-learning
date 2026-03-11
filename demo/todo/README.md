@@ -1,6 +1,6 @@
 # Todo API — Express 学习项目
 
-基于 Express + TypeScript 的 Todo CRUD 接口，数据持久化到 MySQL。
+基于 Express + TypeScript 的 Todo CRUD 接口，数据持久化到 MySQL，已使用 **Prisma** 作为 ORM。
 
 ## 知识点与对应代码
 
@@ -14,7 +14,8 @@
 | **跨域（CORS）** | 配置允许的 origin、methods、headers | `src/middleware/cors.ts` |
 | **接口参数校验** | express-validator：body、param 校验 | `src/middleware/validate.ts` |
 | **静态资源托管** | `express.static('public')` 提供静态文件 | `src/index.ts`、`public/` |
-| **MySQL 持久化** | 连接池、仓库层、启动建表、健康检查、优雅关闭 | `src/db/`、`src/config/`、`src/repositories/` |
+| **MySQL 持久化** | 使用 Prisma ORM 进行读写，启动建表仍用原生 SQL | `src/db/`、`src/config/`、`src/repositories/` |
+| **ORM（Prisma）** | 模型-表映射、CRUD、联表、分页、事务 | `prisma/schema.prisma`、`src/db/prismaClient.ts`、`src/repositories/todoRepository.ts` |
 | **数据库建模** | users / todos 表、主键、外键、索引设计 | `src/db/schema.sql` |
 | **CRUD SQL** | SELECT / INSERT / UPDATE / DELETE 示例 | `src/repositories/todoRepository.ts`、`src/routes/todo.ts` |
 | **联表查询** | INNER JOIN / LEFT JOIN users | `src/repositories/todoRepository.ts` (`findAllWithUser` 等) |
@@ -33,18 +34,18 @@ docker-compose up -d
 
 ### 2. 环境变量
 
-复制 `.env.example` 为 `.env`，按需修改（默认与 docker-compose 中 root 密码一致）：
+已提供 `.env` 示例，可直接修改其中的 MySQL 配置与 `DATABASE_URL`（Prisma 使用）：
 
-```bash
-cp .env.example .env
-```
+- `MYSQL_HOST` / `MYSQL_PORT` / `MYSQL_USER` / `MYSQL_PASSWORD` / `MYSQL_DATABASE`：原生 MySQL 初始化脚本与 docker-compose 使用
+- `DATABASE_URL`：Prisma ORM 使用的连接串，内容与上面保持一致即可
 
 ### 3. 启动应用
 
 ```bash
 pnpm install
-pnpm dev    # 开发（自动建库建表）
-pnpm build && pnpm start  # 生产
+pnpm run prisma:generate   # 生成 Prisma Client（修改 schema 后需要重新执行）
+pnpm dev                   # 开发（自动建库建表）
+pnpm build && pnpm start   # 生产
 ```
 
 - API：http://localhost:3000  

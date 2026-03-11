@@ -12,7 +12,8 @@ import {
   corsMiddleware,
 } from './middleware';
 import { initDatabase } from './db/init';
-import { getPool, closePool, ping } from './db';
+import { ping } from './db';
+import { disconnectPrisma } from './db/prismaClient';
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -73,7 +74,7 @@ async function start() {
   const shutdown = async (signal: string) => {
     console.log(`收到 ${signal}，正在关闭...`);
     server.close(async () => {
-      await closePool();
+      await disconnectPrisma();
       console.log('已关闭');
       process.exit(0);
     });

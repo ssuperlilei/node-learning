@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id        BigInt   @id @default(autoincrement()) @map("id")
+  username  String   @unique @map("username")
+  email     String?  @unique @map("email")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  todos     Todo[]
+
+  @@map("users")
+}
+
+model Todo {
+  id        BigInt   @id @default(autoincrement()) @map("id")
+  userId    BigInt   @map("user_id")
+  title     String   @map("title")
+  completed Boolean  @default(false) @map("completed")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt], map: "idx_todos_user_created")
+  @@index([completed], map: "idx_todos_completed")
+  @@map("todos")
+}
