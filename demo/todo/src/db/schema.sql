@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   username VARCHAR(100) NOT NULL COMMENT '登录名/昵称',
+  password VARCHAR(255) NOT NULL COMMENT '密码（bcrypt 哈希）',
   email VARCHAR(255) NULL COMMENT '邮箱（可为空）',
   created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   PRIMARY KEY (id),                             -- 聚簇主键，行的唯一标识

@@ -10,4 +10,7 @@ export {
   validateCreateTodo,
   validateUpdateTodo,
   validateIdParam,
+  validateLogin,
+  validateRegister,
 } from './validate';
+export { authMiddleware } from './auth';

@@ -23,7 +23,6 @@ export async function initDatabase(): Promise<void> {
     password: config.password,
     multipleStatements: true,
   })
-  console.log(config.database, 111)
   try {
     await conn.query(
       `CREATE DATABASE IF NOT EXISTS \`${config.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`,

@@ -1,0 +1,169 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Todo API",
+    "version": "1.0.0",
+    "description": "待办接口：登录鉴权 + Todo CRUD，JWT Bearer 鉴权"
+  },
+  "servers": [{ "url": "http://localhost:3000", "description": "本地" }],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "登录后获得的 token"
+      }
+    },
+    "schemas": {
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "number", "example": 0 },
+          "message": { "type": "string" },
+          "data": {}
+        }
+      },
+      "LoginBody": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": { "type": "string" },
+          "password": { "type": "string" }
+        }
+      },
+      "RegisterBody": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": { "type": "string" },
+          "password": { "type": "string" },
+          "email": { "type": "string", "format": "email" }
+        }
+      },
+      "CreateTodoBody": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string" },
+          "userId": { "type": "integer", "description": "可选" }
+        }
+      },
+      "UpdateTodoBody": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "completed": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "tags": [
+    { "name": "auth", "description": "登录与注册" },
+    { "name": "todo", "description": "待办 CRUD（需鉴权）" }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "登录",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginBody" } } } },
+        "responses": { "200": { "description": "返回 token" }, "401": { "description": "用户名或密码错误" } }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "注册",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RegisterBody" } } } },
+        "responses": { "201": { "description": "注册成功" }, "400": { "description": "校验失败" } }
+      }
+    },
+    "/todos": {
+      "get": {
+        "tags": ["todo"],
+        "summary": "获取所有 Todo",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "列表" } }
+      },
+      "post": {
+        "tags": ["todo"],
+        "summary": "创建 Todo",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateTodoBody" } } } },
+        "responses": { "201": { "description": "创建成功" } }
+      }
+    },
+    "/todos/{id}": {
+      "get": {
+        "tags": ["todo"],
+        "summary": "获取单个 Todo",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "成功" }, "404": { "description": "不存在" } }
+      },
+      "put": {
+        "tags": ["todo"],
+        "summary": "更新 Todo",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/UpdateTodoBody" } } } },
+        "responses": { "200": { "description": "成功" }, "404": { "description": "不存在" } }
+      },
+      "delete": {
+        "tags": ["todo"],
+        "summary": "删除 Todo",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "responses": { "200": { "description": "成功" }, "404": { "description": "不存在" } }
+      }
+    },
+    "/todos/with-user": {
+      "get": {
+        "tags": ["todo"],
+        "summary": "联表查询",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "列表" } }
+      }
+    },
+    "/todos/page": {
+      "get": {
+        "tags": ["todo"],
+        "summary": "分页查询",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer" } },
+          { "name": "pageSize", "in": "query", "schema": { "type": "integer" } },
+          { "name": "completed", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": { "200": { "description": "分页结果" } }
+      }
+    },
+    "/todos/stats/completed": {
+      "get": {
+        "tags": ["todo"],
+        "summary": "按完成状态统计",
+        "security": [{ "bearerAuth": [] }],
+        "responses": { "200": { "description": "统计" } }
+      }
+    },
+    "/todos/tx/toggle": {
+      "post": {
+        "tags": ["todo"],
+        "summary": "事务批量切换完成状态",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "ids": { "type": "array", "items": { "type": "integer" } } }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "成功" } }
+      }
+    }
+  }
+}

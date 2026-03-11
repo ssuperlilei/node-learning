@@ -43,3 +43,16 @@ export const validateUpdateTodo: ValidationChain[] = [
 export const validateIdParam: ValidationChain[] = [
   param('id').isInt({ min: 1 }).withMessage('id 必须为正整数'),
 ];
+
+/** 登录 body 校验 */
+export const validateLogin: ValidationChain[] = [
+  body('username').trim().notEmpty().withMessage('username 不能为空'),
+  body('password').notEmpty().withMessage('password 不能为空'),
+];
+
+/** 注册 body 校验 */
+export const validateRegister: ValidationChain[] = [
+  body('username').trim().notEmpty().withMessage('username 不能为空').isLength({ min: 2, max: 100 }).withMessage('用户名 2–100 字符'),
+  body('password').notEmpty().withMessage('password 不能为空').isLength({ min: 6 }).withMessage('密码至少 6 位'),
+  body('email').optional().isEmail().withMessage('email 格式无效'),
+];
