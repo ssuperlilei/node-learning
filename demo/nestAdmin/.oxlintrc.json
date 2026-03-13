@@ -1,0 +1,44 @@
+{
+  "root": true,
+  "javascriptVersion": "es2022",
+  "env": {
+    "browser": false,
+    "node": true,
+    "jest": true
+  },
+  "parser": {
+    "tsx": true,
+    "typeScript": {
+      "project": "./tsconfig.json"
+    }
+  },
+  "globals": {
+    "module": "readonly"
+  },
+  "rules": {
+    // 一些常用、相对安全的规则示例，可按需调整
+    "no-var": "error",
+    "prefer-const": "warn",
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "eqeqeq": [
+      "error",
+      "smart"
+    ],
+    "@typescript-eslint/no-explicit-any": "off"
+  },
+  "ignore": [
+    "dist",
+    "node_modules",
+    "coverage",
+    "deploy",
+    "public",
+    "__data"
+  ]
+}
+
