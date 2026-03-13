@@ -14,15 +14,31 @@ datasource db {
 }
 
 model User {
-  id        BigInt   @id @default(autoincrement()) @map("id")
-  username  String   @unique @map("username")
-  password  String   @map("password")
-  email     String?  @unique @map("email")
-  createdAt DateTime @default(now()) @map("created_at")
+  userId             BigInt    @id @default(autoincrement()) @map("user_id")
+  deptId             BigInt?   @map("dept_id")
+  userName           String    @db.VarChar(30)  @map("user_name")
+  nickName           String    @db.VarChar(30)  @map("nick_name")
+  userType           String?   @db.VarChar(2)   @default("00") @map("user_type")
+  email              String?   @db.VarChar(50)  @default("")   @map("email")
+  phonenumber        String?   @db.VarChar(11)  @default("")   @map("phonenumber")
+  sex                String?   @db.Char(1)      @default("0")  @map("sex")
+  avatar             String?   @db.VarChar(100) @default("")   @map("avatar")
+  password           String?   @db.VarChar(100) @default("")   @map("password")
+  status             String?   @db.Char(1)      @default("0")  @map("status")
+  delFlag            String?   @db.Char(1)      @default("0")  @map("del_flag")
+  loginIp            String?   @db.VarChar(128) @default("")   @map("login_ip")
+  loginDate          DateTime? @map("login_date")
+  createBy           String?   @db.VarChar(64)  @default("")   @map("create_by")
+  createTime         DateTime? @map("create_time")
+  updateBy           String?   @db.VarChar(64)  @default("")   @map("update_by")
+  updateTime         DateTime? @map("update_time")
+  remark             String?   @db.VarChar(500) @map("remark")
+  signaturePassword  String?   @db.VarChar(100) @map("signature_password")
+  signatureImageUrl  String?   @db.VarChar(255) @map("signature_image_url")
 
   todos     Todo[]
 
-  @@map("users")
+  @@map("sys_user")
 }
 
 model Todo {
@@ -33,7 +49,7 @@ model Todo {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@index([userId, createdAt], map: "idx_todos_user_created")
   @@index([completed], map: "idx_todos_completed")
