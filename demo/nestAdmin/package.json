@@ -150,7 +150,7 @@
     ]
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
+    "pre-commit": "cd demo/nestAdmin && pnpm run lint-staged"
   },
   "jest": {
     "moduleFileExtensions": [
