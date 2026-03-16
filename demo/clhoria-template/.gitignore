@@ -1,0 +1,32 @@
+# dev
+.vscode/
+!.vscode/launch.json
+!.vscode/*.code-snippets
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+
+# deps
+node_modules/
+
+# env
+.env
+.env.production
+.env.test
+
+# logs
+logs/
+*.log
+pnpm-debug.log*
+lerna-debug.log*
+
+# misc
+.DS_Store
+
+.vercel
+dist
+
+*-example
+
+# local *
+*.local.*
