@@ -14,11 +14,11 @@
     "test": "vitest",
     "build": "vite build",
     "boss": "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres pnpm exec pg-boss-dashboard",
-    "generate": "bunx --bun drizzle-kit generate --config drizzle.config.ts",
-    "push": "bunx --bun drizzle-kit push",
-    "studio": "bunx --bun drizzle-kit studio --config drizzle.config.ts",
-    "seed": "bun run migrations/seed/index.ts",
-    "migrate": "bunx --bun drizzle-kit migrate",
+    "generate": "pnpm exec drizzle-kit generate --config drizzle.config.ts",
+    "push": "pnpm exec drizzle-kit push",
+    "studio": "pnpm exec drizzle-kit studio --config drizzle.config.ts",
+    "seed": "dotenvx run -- pnpm exec tsx migrations/seed/index.ts",
+    "migrate": "pnpm exec drizzle-kit migrate",
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^7.7.2",
+    "tsx": "^4.19.2",
     "@clhoria/vite-plugin": "workspace:*",
     "@hono/vite-dev-server": "^0.25.1",
     "@pg-boss/dashboard": "^1.1.1",
