@@ -90,6 +90,23 @@ export const get: SystemParamRouteHandlerType<"get"> = async (c) => {
   return c.json(Resp.ok(param), HttpStatusCodes.OK);
 };
 
+/** Get parameter by key / 获取参数-key 详情 */
+export const getByKey: SystemParamRouteHandlerType<"getByKey"> = async (c) => {
+  const { key } = c.req.valid("param");
+
+  const [param] = await db
+    .select()
+    .from(systemParams)
+    .where(eq(systemParams.key, key))
+    .limit(1);
+
+  if (!param) {
+    return c.json(Resp.fail("参数不存在"), HttpStatusCodes.NOT_FOUND);
+  }
+
+  return c.json(Resp.ok(param), HttpStatusCodes.OK);
+};
+
 /** Update parameter / 更新参数 */
 export const update: SystemParamRouteHandlerType<"update"> = async (c) => {
   const { id } = c.req.valid("param");

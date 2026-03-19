@@ -29,6 +29,7 @@ export default antfu(
       "test/padding-around-all": "error",
       "test/prefer-lowercase-title": "off",
       "style/arrow-parens": "off",
+      "style/operator-linebreak": "off",
     },
   },
 );

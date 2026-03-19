@@ -1,12 +1,26 @@
 import { createRoute } from "@hono/zod-openapi";
 
-import { RefineQueryParamsSchema, RefineResultSchema } from "@/lib/core/refine-query";
+import {
+  RefineQueryParamsSchema,
+  RefineResultSchema,
+} from "@/lib/core/refine-query";
 import * as HttpStatusCodes from "@/lib/core/stoker/http-status-codes";
-import { jsonContent, jsonContentRequired } from "@/lib/core/stoker/openapi/helpers";
+import {
+  jsonContent,
+  jsonContentRequired,
+} from "@/lib/core/stoker/openapi/helpers";
 import { IdUUIDParamsSchema } from "@/lib/core/stoker/openapi/schemas";
 import { respErrSchema } from "@/utils";
 
-import { systemParamCreateSchema, systemParamListResponseSchema, systemParamPatchSchema, systemParamQuerySchema, systemParamResponseSchema } from "./params.schema";
+import {
+  paramKeyField,
+  systemParamCreateSchema,
+  systemParamGetByKeyParamsSchema,
+  systemParamListResponseSchema,
+  systemParamPatchSchema,
+  systemParamQuerySchema,
+  systemParamResponseSchema,
+} from "./params.schema";
 
 const routePrefix = "/system/params";
 const tags = [`${routePrefix}（系统参数管理）`];
@@ -21,9 +35,18 @@ export const list = createRoute({
     query: RefineQueryParamsSchema.extend(systemParamQuerySchema.shape),
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(RefineResultSchema(systemParamListResponseSchema), "列表响应成功"),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(respErrSchema, "查询参数验证错误"),
-    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(respErrSchema, "服务器内部错误"),
+    [HttpStatusCodes.OK]: jsonContent(
+      RefineResultSchema(systemParamListResponseSchema),
+      "列表响应成功",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      respErrSchema,
+      "查询参数验证错误",
+    ),
+    [HttpStatusCodes.INTERNAL_SERVER_ERROR]: jsonContent(
+      respErrSchema,
+      "服务器内部错误",
+    ),
   },
 });
 
@@ -37,8 +60,14 @@ export const create = createRoute({
     body: jsonContentRequired(systemParamCreateSchema, "创建参数"),
   },
   responses: {
-    [HttpStatusCodes.CREATED]: jsonContent(RefineResultSchema(systemParamResponseSchema), "创建成功"),
-    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(respErrSchema, "参数验证失败"),
+    [HttpStatusCodes.CREATED]: jsonContent(
+      RefineResultSchema(systemParamResponseSchema),
+      "创建成功",
+    ),
+    [HttpStatusCodes.UNPROCESSABLE_ENTITY]: jsonContent(
+      respErrSchema,
+      "参数验证失败",
+    ),
   },
 });
 
@@ -52,8 +81,30 @@ export const get = createRoute({
     params: IdUUIDParamsSchema,
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(RefineResultSchema(systemParamResponseSchema), "获取成功"),
+    [HttpStatusCodes.OK]: jsonContent(
+      RefineResultSchema(systemParamResponseSchema),
+      "获取成功",
+    ),
     [HttpStatusCodes.BAD_REQUEST]: jsonContent(respErrSchema, "ID参数错误"),
+    [HttpStatusCodes.NOT_FOUND]: jsonContent(respErrSchema, "参数不存在"),
+  },
+});
+
+/** Get parameter by key / 获取参数-key 详情 */
+export const getByKey = createRoute({
+  tags,
+  summary: "获取参数-key 详情",
+  method: "get",
+  path: `${routePrefix}/key/{key}`,
+  request: {
+    params: systemParamGetByKeyParamsSchema,
+  },
+  responses: {
+    [HttpStatusCodes.OK]: jsonContent(
+      RefineResultSchema(systemParamResponseSchema),
+      "获取成功",
+    ),
+    [HttpStatusCodes.BAD_REQUEST]: jsonContent(respErrSchema, "KEY参数错误"),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(respErrSchema, "参数不存在"),
   },
 });
@@ -69,7 +120,10 @@ export const update = createRoute({
     body: jsonContentRequired(systemParamPatchSchema, "更新参数"),
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(RefineResultSchema(systemParamResponseSchema), "更新成功"),
+    [HttpStatusCodes.OK]: jsonContent(
+      RefineResultSchema(systemParamResponseSchema),
+      "更新成功",
+    ),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(respErrSchema, "参数不存在"),
   },
 });
@@ -84,7 +138,10 @@ export const remove = createRoute({
     params: IdUUIDParamsSchema,
   },
   responses: {
-    [HttpStatusCodes.OK]: jsonContent(RefineResultSchema(IdUUIDParamsSchema), "删除成功"),
+    [HttpStatusCodes.OK]: jsonContent(
+      RefineResultSchema(IdUUIDParamsSchema),
+      "删除成功",
+    ),
     [HttpStatusCodes.BAD_REQUEST]: jsonContent(respErrSchema, "ID参数错误"),
     [HttpStatusCodes.NOT_FOUND]: jsonContent(respErrSchema, "参数不存在"),
   },
