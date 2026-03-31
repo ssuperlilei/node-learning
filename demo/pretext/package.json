@@ -1,0 +1,13 @@
+{
+  "name": "pretext-ai-chat-demo",
+  "private": true,
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"pnpm --filter pretext-chat-server dev\" \"pnpm --filter pretext-chat-client dev\"",
+    "dev:server": "pnpm --filter pretext-chat-server dev",
+    "dev:client": "pnpm --filter pretext-chat-client dev",
+    "build": "pnpm --filter pretext-chat-client build"
+  }
+}
